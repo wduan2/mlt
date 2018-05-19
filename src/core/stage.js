@@ -51,23 +51,23 @@ export default class Stage {
 
     fall = () => {
         const fr = this.engine.fall(this.tetris);
-        if (fr < 0) throw 'Game Over!';
+        if (fr <= 0) throw 'Game Over!';
 
-        this.reorganize(this.tetris, fr);
+        this.turnover(fr);
     };
 
     settle = () => {
         const fr = this.engine.fall(this.tetris);
-        if (fr < 0) throw 'Game Over!';
+        if (fr <= 0) throw 'Game Over!';
 
         // if the deepest row is equal to the current row, it is means that the tetris
         // can not move down any more and it should be digested
         if (fr === this.tetris.topLeft[0]) {
-            this.reorganize(fr);
+            this.turnover(fr);
         }
     };
 
-    reorganize = (fr) => {
+    turnover = (fr) => {
         this.engine.digest(this.tetris, fr);
 
         // check if the rows can be erased

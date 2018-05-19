@@ -15,11 +15,10 @@ export default class Engine {
      * Calculates the deepest position where the tetris can go.
      *
      *    _ ______ ur
-     *   |_|_
-     *   |_|_|_
-     *     |_|_|__ lr
-     *  _
-     * |_|    * <--- c with min(sr - lr)
+     *   |_|_ _
+     *   |_|_|_|__ lr
+     *       |_|
+     *  _     * <--- c with min(sr - lr)
      * |_|_   _
      * |_|_|_|_|__ sr
      *
@@ -104,7 +103,7 @@ export default class Engine {
      *
      * @param topLeft
      * @blocks blocks
-     * @param m the movement
+     * @param m the movement that will be taken
      * @return true if the tetris is blocked
      */
     isBlocked(topLeft, blocks, m) {
@@ -132,12 +131,6 @@ export default class Engine {
         return false;
     }
 
-    /*
-     * Digests the tetris.
-     *
-     * @param t
-     * @param fr the final row of the top left block
-     */
     digest(t, fr) {
         const topLeft = t.topLeft;
         const blocks = t.blocks;
