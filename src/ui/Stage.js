@@ -1,6 +1,6 @@
 import React from 'react'
 
-class UI extends React.Component {
+class Stage extends React.Component {
     constructor(props) {
         super(props)
     }
@@ -14,4 +14,4 @@ class UI extends React.Component {
     }
 }
 
-export default UI;
+export default Stage;
