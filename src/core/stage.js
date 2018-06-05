@@ -15,7 +15,7 @@ export default class Stage {
         this.tetris = tetris;
     }
 
-    dispatch(event) {
+    reduce(event) {
         switch (event) {
             case Event.LEFT:
             case Event.RIGHT:
@@ -50,14 +50,14 @@ export default class Stage {
     };
 
     fall = () => {
-        const fr = this.engine.fall(this.tetris);
+        const fr = this.engine.deepest(this.tetris);
         if (fr <= 0) throw 'Game Over!';
 
         this.turnover(fr);
     };
 
     settle = () => {
-        const fr = this.engine.fall(this.tetris);
+        const fr = this.engine.deepest(this.tetris);
         if (fr <= 0) throw 'Game Over!';
 
         // if the deepest row is equal to the current row, it is means that the tetris

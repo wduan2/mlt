@@ -12,7 +12,7 @@ const cmpGrids = (a, e) => {
     return true;
 };
 
-test('test fall', () => {
+test('test deepest', () => {
     const before = [
         [0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0],
@@ -44,28 +44,28 @@ test('test fall', () => {
     const z = new Tetris(Shape.Z, [0, 1]);
     const l = new Tetris(Shape.L, [0, 1]);
 
-    engine.digest(q, engine.fall(q));
+    engine.digest(q, engine.deepest(q));
     after[7][0] = 1;
     after[7][1] = 1;
     after[8][0] = 1;
     after[8][1] = 1;
     expect(cmpGrids(before, after)).toBeTruthy();
 
-    engine.digest(s, engine.fall(s));
+    engine.digest(s, engine.deepest(s));
     after[5][1] = 1;
     after[5][2] = 1;
     after[6][0] = 1;
     after[6][1] = 1;
     expect(cmpGrids(before, after)).toBeTruthy();
 
-    engine.digest(z, engine.fall(z));
+    engine.digest(z, engine.deepest(z));
     after[3][1] = 1;
     after[3][2] = 1;
     after[4][2] = 1;
     after[4][3] = 1;
     expect(cmpGrids(before, after)).toBeTruthy();
 
-    engine.digest(l, engine.fall(l));
+    engine.digest(l, engine.deepest(l));
     after[0][1] = 1;
     after[1][1] = 1;
     after[2][1] = 1;
@@ -73,7 +73,7 @@ test('test fall', () => {
     expect(cmpGrids(before, after)).toBeTruthy();
 });
 
-test('test fall and game over', () => {
+test('test deepest overflow', () => {
     const grid = [
         [0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0],
@@ -94,11 +94,11 @@ test('test fall and game over', () => {
     const l = new Tetris(Shape.L, [0, 1]);
     const j = new Tetris(Shape.J, [0, 1]);
 
-    engine.digest(q, engine.fall(q));
-    engine.digest(s, engine.fall(s));
-    engine.digest(z, engine.fall(z));
-    engine.digest(l, engine.fall(l));
-    expect(engine.fall(j)).toBeLessThan(0);
+    engine.digest(q, engine.deepest(q));
+    engine.digest(s, engine.deepest(s));
+    engine.digest(z, engine.deepest(z));
+    engine.digest(l, engine.deepest(l));
+    expect(engine.deepest(j)).toBeLessThan(0);
 })
 
 test('test highestSurface', () => {

@@ -6,58 +6,73 @@ export class Tetris {
     }
 }
 
-export class Shape {
+export class Factory {
 
-    static Q = Object.freeze({
+    static nextTetris(initTopLeft) {
+        const shapeName = this.nextShapeName();
+        const shape = Shape[shapeName];
+        return new Tetris(shape, initTopLeft);
+    }
+
+    static nextShapeName() {
+        const sides = Object.getOwnPropertyNames(Shape);
+        const index = Math.floor(Math.random() * sides.length);
+        return sides[index];
+    }
+}
+
+export const Shape = {
+
+    Q: Object.freeze({
         blocks: [
             [1, 1],
             [1, 1]
         ],
         color: '#4e7fff'
-    })
+    }),
 
-    static L = Object.freeze({
+    L: Object.freeze({
         blocks: [
             [1, 0],
             [1, 0],
             [1, 1]
         ],
         color: '#ffa2e4'
-    })
+    }),
 
-    static J = Object.freeze({
+    J: Object.freeze({
         blocks: [
             [0, 1],
             [0, 1],
             [1, 1]
         ],
         color: '#0f801f'
-    })
+    }),
 
-    static T = Object.freeze({
+    T: Object.freeze({
         blocks: [
             [0, 1, 0],
             [1, 1, 1]
         ],
         color: '#ffe67a'
-    })
+    }),
 
-    static I = Object.freeze({
+    I: Object.freeze({
         blocks: [
             [1, 1, 1, 1]
         ],
         color: '#b8251f'
-    })
+    }),
 
-    static S = Object.freeze({
+    S: Object.freeze({
         blocks: [
             [0, 1, 1],
             [1, 1, 0]
         ],
         color: '#da3aff'
-    })
+    }),
 
-    static Z = Object.freeze({
+    Z: Object.freeze({
         blocks: [
             [1, 1, 0],
             [0, 1, 1]

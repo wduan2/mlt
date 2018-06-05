@@ -36,7 +36,7 @@ export default class Engine {
      * @param t the tetris
      * @return the upper row of the tetris after falling
      */
-    fall(t) {
+    deepest(t) {
         const topLeft = t.topLeft;
         const blocks = t.blocks;
 

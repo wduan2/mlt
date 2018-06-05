@@ -13,25 +13,25 @@ const cmpGrids = (a, e) => {
     return true;
 };
 
-test('test dispatch', () => {
+test('test reduce', () => {
     const stage = new Stage(10, 10);
     stage.move = jest.fn();
     stage.rotate = jest.fn();
     stage.fall = jest.fn();
 
-    stage.dispatch(Event.DOWN);
+    stage.reduce(Event.DOWN);
     expect(stage.move).toHaveBeenCalledTimes(1);
 
-    stage.dispatch(Event.RIGHT);
+    stage.reduce(Event.RIGHT);
     expect(stage.move).toHaveBeenCalledTimes(2);
 
-    stage.dispatch(Event.LEFT);
+    stage.reduce(Event.LEFT);
     expect(stage.move).toHaveBeenCalledTimes(3);
 
-    stage.dispatch(Event.ROTATE);
+    stage.reduce(Event.ROTATE);
     expect(stage.rotate).toHaveBeenCalledTimes(1);
 
-    stage.dispatch(Event.FALL);
+    stage.reduce(Event.FALL);
     expect(stage.fall).toHaveBeenCalledTimes(1);
 });
 
