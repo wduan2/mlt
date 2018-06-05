@@ -6,8 +6,8 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 // webpack build require absolute path
 const BUILD_DIR = resolve(__dirname, 'dist');
-const PUBLIC_PATH = resolve(__dirname, '/');
 const SRC_DIR = resolve(__dirname, 'src');
+const PUBLIC_PATH = '/';
 
 module.exports = {
     devtool: 'source-map',
