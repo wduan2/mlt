@@ -1,8 +1,8 @@
 import React from 'react'
 import {render} from 'react-dom'
-import Stage from './ui/Stage'
+import UI from './ui/UI'
 
 render(
-    <Stage/>,
+    <UI/>,
     document.getElementById('mlt')
 );
