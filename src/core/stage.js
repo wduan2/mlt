@@ -3,12 +3,19 @@ import Engine from './engine';
 
 export default class Stage {
 
+    /*
+     * Represents the grids by a 2D array, the first index as the column
+     * and the second index as the row
+     *
+     * the origin (0, 0) is the top-left corner of the grid
+     *
+     * if a cell of the grid is filled by a block then set it to 1 otherwise it remains 0
+     */
     constructor(width, height) {
-        const grid = Array(height).fill(0);
+        this.grid = Array(height).fill(0);
         for (let r = 0; r < height; r++) {
-            grid[r] = Array(width).fill(0);
+            this.grid[r] = Array(width).fill(0);
         }
-        this.engine = new Engine(grid);
     }
 
     setTetris(tetris) {
@@ -34,7 +41,7 @@ export default class Stage {
     }
 
     move = (event) => {
-        if (!this.engine.isBlocked(this.tetris.topLeft, this.tetris.blocks, event.pos)) {
+        if (!Engine.isBlocked(this.tetris.topLeft, this.tetris.blocks, event.pos, this.grid)) {
             this.tetris.topLeft[0] += event.pos[0];
             this.tetris.topLeft[1] += event.pos[1];
         }
@@ -42,22 +49,22 @@ export default class Stage {
     };
 
     rotate = (event) => {
-        const after = this.engine.rotate(this.tetris);
-        if (!this.engine.isBlocked(this.tetris.topLeft, after, event.pos)) {
+        const after = Engine.rotate(this.tetris);
+        if (!Engine.isBlocked(this.tetris.topLeft, after, event.pos, this.grid)) {
             this.tetris.blocks = after;
         }
         this.settle();
     };
 
     fall = () => {
-        const fr = this.engine.deepest(this.tetris);
+        const fr = Engine.deepest(this.tetris, this.grid);
         if (fr <= 0) throw 'Game Over!';
 
         this.turnover(fr);
     };
 
     settle = () => {
-        const fr = this.engine.deepest(this.tetris);
+        const fr = Engine.deepest(this.tetris, this.grid);
         if (fr <= 0) throw 'Game Over!';
 
         // if the deepest row is equal to the current row, it is means that the tetris
@@ -68,13 +75,13 @@ export default class Stage {
     };
 
     turnover = (fr) => {
-        this.engine.digest(this.tetris, fr);
+        Engine.digest(this.tetris, fr, this.grid);
 
         // check if the rows can be erased
         for (let r = fr; r < fr + this.tetris.blocks.length; r++) {
-            if (this.engine.canErase(r)) {
+            if (Engine.canErase(r, this.grid)) {
                 // shift the blocks
-                this.engine.shift(r);
+                Engine.shift(r, this.grid);
             }
         }
 

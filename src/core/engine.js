@@ -1,15 +1,4 @@
 export default class Engine {
-    /*
-     * Represents the grids by a 2D array, the first index as the column
-     * and the second index as the row
-     *
-     * the origin (0, 0) is the top-left corner of the grid
-     *
-     * if a cell of the grid is filled by a block then set it to 1 otherwise it remains 0
-     */
-    constructor(grid) {
-        this.grid = grid;
-    }
 
     /*
      * Calculates the deepest position where the tetris can go.
@@ -34,15 +23,16 @@ export default class Engine {
      *          fr = min(sr - lr + ur - 1)
      *
      * @param t the tetris
+     * @param grid
      * @return the upper row of the tetris after falling
      */
-    deepest(t) {
+    static deepest = (t, grid) => {
         const topLeft = t.topLeft;
         const blocks = t.blocks;
 
         // find and record the minimum distance between the tetirs and grid surface
         let minLr = 0;
-        let minSr = this.grid.length;
+        let minSr = grid.length;
 
         let lr;
         let sr;
@@ -54,7 +44,7 @@ export default class Engine {
             }
 
             lr = tr + topLeft[0];
-            sr = this.highestSurface(tc + topLeft[1]);
+            sr = Engine.highestSurface(tc + topLeft[1], grid);
 
             if (sr - lr < minSr - minLr) {
                 minSr = sr;
@@ -63,7 +53,7 @@ export default class Engine {
         }
 
         return minSr - minLr + topLeft[0] - 1;
-    }
+    };
 
     /*
      * Rotates the tetris 90 degrees clockwise.
@@ -83,7 +73,7 @@ export default class Engine {
      *
      * @param t
      */
-    rotate(t) {
+    static rotate = (t) => {
         const before = t.blocks;
         const after = Array(before[0].length).fill(0);
         for (let r = 0; r < after.length; r++) {
@@ -96,42 +86,43 @@ export default class Engine {
             }
         }
         return after;
-    }
+    };
 
     /*
      * Test if the tetris is blocked at a position.
      *
      * @param topLeft
-     * @blocks blocks
+     * @param blocks
      * @param m the movement that will be taken
+     * @param grid
      * @return true if the tetris is blocked
      */
-    isBlocked(topLeft, blocks, m) {
+    static isBlocked = (topLeft, blocks, m, grid) => {
         for (let tr = 0; tr < blocks.length; tr++) {
             for (let tc = 0; tc < blocks[tr].length; tc++) {
                 const nr = tr + topLeft[0] + m[0];
                 const nc = tc + topLeft[1] + m[1];
 
                 // out of horizontal boundary
-                if (nr < 0 || nr >= this.grid.length) {
+                if (nr < 0 || nr >= grid.length) {
                     return true;
                 }
 
                 // out of vertical boundary
-                if (nc < 0 || nc >= this.grid[0].length) {
+                if (nc < 0 || nc >= grid[0].length) {
                     return true;
                 }
 
                 // blocked by digested blocks
-                if (this.grid[nr][nc] === 1) {
+                if (grid[nr][nc] === 1) {
                     return true;
                 }
             }
         }
         return false;
-    }
+    };
 
-    digest(t, fr) {
+    static digest = (t, fr, grid) => {
         const topLeft = t.topLeft;
         const blocks = t.blocks;
 
@@ -139,28 +130,28 @@ export default class Engine {
             for (let tc = 0; tc < blocks[tr].length; tc++) {
                 // ignore the 0 block of the tetris
                 if (blocks[tr][tc] === 1) {
-                    this.grid[tr + fr][tc + topLeft[1]] = blocks[tr][tc];
+                    grid[tr + fr][tc + topLeft[1]] = blocks[tr][tc];
                 }
             }
         }
-    }
+    };
 
-    shift(erasedRow) {
+    static shift = (erasedRow, grid) => {
         for (let r = erasedRow - 1; r >= 0; r--) {
-            this.grid[r + 1] = this.grid[r];
+            grid[r + 1] = grid[r];
         }
-        this.grid[0] = Array(this.grid[erasedRow].length).fill(0);
-    }
+        grid[0] = Array(grid[erasedRow].length).fill(0);
+    };
 
-    canErase(row) {
-        for (let col = 0; col < this.grid[row].length; col++) {
-            if (this.grid[row][col] === 0) {
+    static canErase = (row, grid) => {
+        for (let col = 0; col < grid[row].length; col++) {
+            if (grid[row][col] === 0) {
                 // not all of the columns are filled at the row
                 return false;
             }
         }
         return true;
-    }
+    };
 
     /*
      * Gets the highest surface of one column by finding the filled row with the smallest index
@@ -169,13 +160,13 @@ export default class Engine {
      * @param col the column
      * @return the height
      */
-    highestSurface(col) {
+    static highestSurface = (col, grid) => {
         let highest = 0;
-        while (highest < this.grid.length && this.grid[highest][col] !== 1) {
+        while (highest < grid.length && grid[highest][col] !== 1) {
             highest++;
         }
         // if the last row is empty then the highest surface is the height of the grid
         // which is out of the array index
         return highest;
-    }
+    };
 }

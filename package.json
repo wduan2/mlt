@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "serve": "node_modules/.bin/webpack-dev-server",
+    "start": "node_modules/.bin/webpack-dev-server",
     "build": "webpack",
     "test": "jest"
   },
@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "moment": "^2.22.1",
-    "rxjs": "^6.1.0"
+    "rxjs": "^6.1.0",
+    "rxjs-compat": "^6.2.0"
   }
 }

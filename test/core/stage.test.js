@@ -75,7 +75,7 @@ test('test move integration', () => {
         [0, 1, 1, 0, 0]
     ];
 
-    expect(cmpGrids(after, stage.engine.grid)).toBeTruthy();
+    expect(cmpGrids(after, stage.grid)).toBeTruthy();
     expect(stage.tetris).toBeNull();
 });
 
@@ -96,7 +96,7 @@ test('test rotate', () => {
         [0, 1, 0, 0, 0]
     ];
 
-    expect(cmpGrids(after, stage.engine.grid)).toBeTruthy();
+    expect(cmpGrids(after, stage.grid)).toBeTruthy();
     expect(stage.tetris).toBeNull();
 });
 
@@ -115,7 +115,7 @@ test('test fall', () => {
         [1, 1, 0, 0, 0]
     ];
 
-    expect(cmpGrids(after, stage.engine.grid)).toBeTruthy();
+    expect(cmpGrids(after, stage.grid)).toBeTruthy();
     expect(stage.tetris).toBeNull();
 });
 
@@ -136,7 +136,7 @@ test('test settle and turnover', () => {
         [0, 0, 0, 0],
     ];
 
-    expect(cmpGrids(after, stage.engine.grid)).toBeTruthy();
+    expect(cmpGrids(after, stage.grid)).toBeTruthy();
     expect(stage.tetris).toBeNull();
 });
 
