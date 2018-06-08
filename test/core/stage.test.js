@@ -1,6 +1,6 @@
 import Event from '../../src/core/event';
 import Stage from '../../src/core/stage';
-import {Tetris, Shape} from '../../src/core/tetris'
+import {Tetris, Shape, Factory} from '../../src/core/tetris'
 
 const cmpGrids = (a, e) => {
     for (let r = 0; r < a.length; r++) {
@@ -18,6 +18,7 @@ test('test reduce', () => {
     stage.move = jest.fn();
     stage.rotate = jest.fn();
     stage.fall = jest.fn();
+    stage.settle = jest.fn();
 
     stage.reduce(Event.DOWN);
     expect(stage.move).toHaveBeenCalledTimes(1);
@@ -41,31 +42,29 @@ test('test move', () => {
     stage.settle = jest.fn();
 
     const s = new Tetris(Shape.S, [0, 0]);
-    stage.setTetris(s);
+    stage.tetris = s;
 
     stage.move(Event.DOWN);
     expect(s.topLeft[0] === 1);
-    expect(stage.settle).toHaveBeenCalledTimes(1);
 
     stage.move(Event.LEFT);
     expect(s.topLeft[1] === 0);
-    expect(stage.settle).toHaveBeenCalledTimes(2);
 
     stage.move(Event.RIGHT);
     expect(s.topLeft[1] === 1);
-    expect(stage.settle).toHaveBeenCalledTimes(3);
 });
 
 test('test move integration', () => {
-    const stage = new Stage(5, 5);
-    const s = new Tetris(Shape.S, [0, 0]);
-    stage.setTetris(s);
+    Factory.nextTetris = jest.fn();
 
-    stage.move(Event.DOWN);
-    stage.move(Event.LEFT);
-    stage.move(Event.RIGHT);
-    stage.move(Event.DOWN);
-    stage.move(Event.DOWN);
+    const stage = new Stage(5, 5);
+
+    stage.tetris = new Tetris(Shape.S, [0, 0]);
+    stage.reduce(Event.DOWN);
+    stage.reduce(Event.LEFT);
+    stage.reduce(Event.RIGHT);
+    stage.reduce(Event.DOWN);
+    stage.reduce(Event.DOWN);
 
     const after = [
         [0, 0, 0, 0, 0],
@@ -76,17 +75,18 @@ test('test move integration', () => {
     ];
 
     expect(cmpGrids(after, stage.grid)).toBeTruthy();
-    expect(stage.tetris).toBeNull();
+    expect(Factory.nextTetris).toHaveBeenCalledTimes(2);
 });
 
-test('test rotate', () => {
-    const stage = new Stage(5, 5);
-    const s = new Tetris(Shape.S, [0, 0]);
-    stage.setTetris(s);
+test('test rotate integration', () => {
+    Factory.nextTetris = jest.fn();
 
-    stage.move(Event.DOWN);
-    stage.move(Event.DOWN);
-    stage.rotate(Event.ROTATE);
+    const stage = new Stage(5, 5);
+
+    stage.tetris = new Tetris(Shape.S, [0, 0]);
+    stage.reduce(Event.DOWN);
+    stage.reduce(Event.DOWN);
+    stage.reduce(Event.ROTATE);
 
     const after = [
         [0, 0, 0, 0, 0],
@@ -97,15 +97,16 @@ test('test rotate', () => {
     ];
 
     expect(cmpGrids(after, stage.grid)).toBeTruthy();
-    expect(stage.tetris).toBeNull();
+    expect(Factory.nextTetris).toHaveBeenCalledTimes(2);
 });
 
-test('test fall', () => {
-    const stage = new Stage(5, 5);
-    const s = new Tetris(Shape.S, [0, 0]);
-    stage.setTetris(s);
+test('test fall integration', () => {
+    Factory.nextTetris = jest.fn();
 
-    stage.fall(Event.FALL);
+    const stage = new Stage(5, 5);
+
+    stage.tetris  = new Tetris(Shape.S, [0, 0]);
+    stage.reduce(Event.FALL);
 
     const after = [
         [0, 0, 0, 0, 0],
@@ -116,18 +117,19 @@ test('test fall', () => {
     ];
 
     expect(cmpGrids(after, stage.grid)).toBeTruthy();
-    expect(stage.tetris).toBeNull();
+    expect(Factory.nextTetris).toHaveBeenCalledTimes(2);
 });
 
-test('test settle and turnover', () => {
-    const stage = new Stage(4, 4);
-    const q1 = new Tetris(Shape.Q, [0, 0]);
-    stage.setTetris(q1);
-    stage.fall(Event.FALL);
+test('test settle', () => {
+    Factory.nextTetris = jest.fn();
 
-    const q2 = new Tetris(Shape.Q, [0, 2]);
-    stage.setTetris(q2);
-    stage.fall(Event.FALL);
+    const stage = new Stage(4, 4);
+
+    stage.tetris = new Tetris(Shape.Q, [0, 0]);
+    stage.reduce(Event.FALL);
+
+    stage.tetris = new Tetris(Shape.Q, [0, 2]);
+    stage.reduce(Event.FALL);
 
     const after = [
         [0, 0, 0, 0],
@@ -137,31 +139,29 @@ test('test settle and turnover', () => {
     ];
 
     expect(cmpGrids(after, stage.grid)).toBeTruthy();
-    expect(stage.tetris).toBeNull();
+    expect(Factory.nextTetris).toHaveBeenCalledTimes(3);
 });
 
 test('test game over', () => {
     const stage = new Stage(5, 5);
-    const s = new Tetris(Shape.S, [0, 0]);
-    stage.setTetris(s);
-    stage.fall(Event.FALL);
 
-    const q = new Tetris(Shape.Q, [0, 0]);
-    stage.setTetris(q);
-    stage.fall(Event.FALL);
+    stage.tetris = new Tetris(Shape.S, [0, 0]);
+    stage.reduce(Event.FALL);
 
-    const i = new Tetris(Shape.I, [0, 0]);
-    stage.setTetris(i);
+    stage.tetris = new Tetris(Shape.Q, [0, 0]);
+    stage.reduce(Event.FALL);
+
+    stage.tetris = new Tetris(Shape.I, [0, 0]);
     try {
-        stage.move(Event.DOWN);
+        stage.reduce(Event.DOWN);
     } catch(e) {
         expect(e).toBe('Game Over!')
     }
 
-    const l = new Tetris(Shape.L, [0, 0]);
-    stage.setTetris(l);
+    // newly created tetris caused game over
+    stage.tetris = new Tetris(Shape.L, [0, 0]);
     try {
-        stage.move(Event.LEFT);
+        stage.reduce(Event.LEFT);
     } catch(e) {
         expect(e).toBe('Game Over!')
     }

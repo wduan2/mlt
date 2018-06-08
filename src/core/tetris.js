@@ -8,17 +8,17 @@ export class Tetris {
 
 export class Factory {
 
-    static nextTetris(initTopLeft) {
-        const shapeName = this.nextShapeName();
+    static nextTetris = (initTopLeft) => {
+        const shapeName = Factory.nextShapeName();
         const shape = Shape[shapeName];
         return new Tetris(shape, initTopLeft);
-    }
+    };
 
-    static nextShapeName() {
+    static nextShapeName = () => {
         const sides = Object.getOwnPropertyNames(Shape);
         const index = Math.floor(Math.random() * sides.length);
         return sides[index];
-    }
+    };
 }
 
 export const Shape = {

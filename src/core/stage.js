@@ -1,5 +1,6 @@
 import Event from './event';
 import Engine from './engine';
+import {Factory} from './tetris';
 
 export default class Stage {
 
@@ -11,33 +12,33 @@ export default class Stage {
      *
      * if a cell of the grid is filled by a block then set it to 1 otherwise it remains 0
      */
-    constructor(width, height) {
+    constructor(width, height, initTopLeft) {
         this.grid = Array(height).fill(0);
         for (let r = 0; r < height; r++) {
             this.grid[r] = Array(width).fill(0);
         }
-    }
-
-    setTetris(tetris) {
-        this.tetris = tetris;
+        this.initTopLeft = initTopLeft;
+        this.tetris = Factory.nextTetris(initTopLeft);
     }
 
     reduce(event) {
+        let fr = -1;
         switch (event) {
             case Event.LEFT:
             case Event.RIGHT:
             case Event.DOWN:
-                this.move(event);
+                fr = this.move(event);
                 break;
             case Event.ROTATE:
-                this.rotate(event);
+                fr = this.rotate(event);
                 break;
             case Event.FALL:
-                this.fall();
+                fr = this.fall();
                 break;
             default:
-                console.warn(`Unknown event: ${event}`);
+                throw `Unknown event: ${event}`;
         }
+        this.settle(fr);
     }
 
     move = (event) => {
@@ -45,7 +46,7 @@ export default class Stage {
             this.tetris.topLeft[0] += event.pos[0];
             this.tetris.topLeft[1] += event.pos[1];
         }
-        this.settle();
+        return Engine.deepest(this.tetris, this.grid);
     };
 
     rotate = (event) => {
@@ -53,38 +54,31 @@ export default class Stage {
         if (!Engine.isBlocked(this.tetris.topLeft, after, event.pos, this.grid)) {
             this.tetris.blocks = after;
         }
-        this.settle();
+        return Engine.deepest(this.tetris, this.grid);
     };
 
     fall = () => {
         const fr = Engine.deepest(this.tetris, this.grid);
-        if (fr <= 0) throw 'Game Over!';
-
-        this.turnover(fr);
+        this.tetris.topLeft[0] = fr;
+        return fr;
     };
 
-    settle = () => {
-        const fr = Engine.deepest(this.tetris, this.grid);
+    settle = (fr) => {
         if (fr <= 0) throw 'Game Over!';
 
         // if the deepest row is equal to the current row, it is means that the tetris
         // can not move down any more and it should be digested
         if (fr === this.tetris.topLeft[0]) {
-            this.turnover(fr);
+            Engine.digest(this.tetris, fr, this.grid);
+
+            // check if the rows can be erased
+            for (let r = fr; r < fr + this.tetris.blocks.length; r++) {
+                if (Engine.canErase(r, this.grid)) {
+                    // shift the blocks
+                    Engine.shift(r, this.grid);
+                }
+            }
+            this.tetris = Factory.nextTetris(this.initTopLeft);
         }
     };
-
-    turnover = (fr) => {
-        Engine.digest(this.tetris, fr, this.grid);
-
-        // check if the rows can be erased
-        for (let r = fr; r < fr + this.tetris.blocks.length; r++) {
-            if (Engine.canErase(r, this.grid)) {
-                // shift the blocks
-                Engine.shift(r, this.grid);
-            }
-        }
-
-        this.setTetris(null);
-    }
 }

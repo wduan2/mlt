@@ -7,8 +7,7 @@ class UI extends React.Component {
     constructor(props) {
         super(props);
         const {width, height, initTopLeft} = props;
-        this.stage = new Stage(width, height);
-        this.initTopLeft = initTopLeft;
+        this.stage = new Stage(width, height, initTopLeft);
     }
 
     componentDidMount() {
@@ -50,6 +49,7 @@ class UI extends React.Component {
     render() {
         return (
             <div>
+                <button onClick={this.resume}>Start</button>
                 <div>container</div>
             </div>
         )
