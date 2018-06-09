@@ -6,45 +6,112 @@ import {Observable} from 'rxjs/Rx'
 class UI extends React.Component {
     state = {
         nextStatus: 'Start',
-        paused: true
+        paused: true,
+        grid: [[]] // init grid
     };
 
     constructor(props) {
         super(props);
-        const {width, height, initTopLeft} = props;
-        this.stage = new Stage(width, height, initTopLeft);
     }
 
+    // componentWillMount (deprecated) --> render --> componentDidMount
     componentDidMount() {
-
+        this.reset();
     }
 
-    resume() {
-        this.activeKeyOb = keyOb.subscribe(e => this.stage.reduce(e));
-        this.activeGravityOb = gravityOb.subscribe(() => this.stage.reduce(Event.DOWN));
+    reset = () => {
+        const {width, height, initTopLeft} = this.props;
+
+        this.stage = new Stage(width, height, initTopLeft);
+        this.grid = Array(height).fill('#D0D3D4');
+        for (let r = 0; r < height; r++) {
+            this.grid[r] = Array(width).fill('#D0D3D4');
+        }
+
+        this.setState({grid: this.grid});
+    };
+
+    resume = () => {
+        this.activeKeyOb = keyOb.subscribe(e => {
+            this.stage.reduce(e);
+            this.refreshGrid();
+        });
+
+        this.activeGravityOb = gravityOb.subscribe(() => {
+            this.stage.reduce(Event.DOWN);
+            this.refreshGrid();
+        });
+
         this.setState({paused: false, nextStatus: 'Pause'});
 
         // TODO: handle game over!
-    }
+    };
 
-    pause() {
+    refreshGrid = () => {
+        const sblocks = this.stage.grid;
+        for (let r = 0; r < sblocks.length; r++) {
+            for (let c = 0; c < sblocks[0].length; c++) {
+                if (sblocks[r][c] !== 0) {
+                    this.grid[r][c] = '#515A5A';
+                } else {
+                    // remove the trail of tetris
+                    this.grid[r][c] = '#D0D3D4';
+                }
+            }
+        }
+
+        const tblocks = this.stage.tetris.blocks;
+        const topLeft = this.stage.tetris.topLeft;
+        for (let r = 0; r < tblocks.length; r++) {
+            for (let c = 0; c < tblocks[0].length; c++) {
+                if (tblocks[r][c] === 1) {
+                    this.grid[r + topLeft[0]][c + topLeft[1]] = this.stage.tetris.color;
+                }
+            }
+        }
+
+        this.setState({grid: this.grid});
+    };
+
+    pause = () => {
         // for RxJs 5
         this.activeKeyOb.unsubscribe();
         this.activeGravityOb.unsubscribe();
         this.setState({paused: true, nextStatus: 'Resume'});
-    }
+    };
 
     render() {
         return (
             <div>
-                <button onClick={() => {
+                <button ref={buttonRef => this.buttonRef = buttonRef} onClick={() => {
                     if (this.state.paused) {
                         this.resume();
                     } else {
                         this.pause();
                     }
+                    // remove focus after click
+                    this.buttonRef.blur();
                 }}>{this.state.nextStatus}</button>
-                <div>container</div>
+                <table style={{
+                    border: 'solid',
+                    borderColor: '#1C2833',
+                    borderWidth: '3px'
+                }}>
+                    <tbody>{this.state.grid.map((row, ri) => {
+                        return (
+                            <tr key={ri}>{row.map((col, ci) => {
+                                return (
+                                    <td key={ci} style={{
+                                        width: '20px',
+                                        height: '20px',
+                                        borderWidth: '0.5px',
+                                        backgroundColor: col
+                                    }}>&nbsp;</td>
+                                );
+                            })}</tr>
+                        );
+                    })}</tbody>
+                </table>
             </div>
         )
     }
