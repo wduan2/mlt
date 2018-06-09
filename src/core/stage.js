@@ -78,6 +78,7 @@ export default class Stage {
                     Engine.shift(r, this.grid);
                 }
             }
+
             this.tetris = Factory.nextTetris(this.initTopLeft);
         }
     };

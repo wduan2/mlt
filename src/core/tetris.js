@@ -2,7 +2,8 @@ export class Tetris {
     constructor(shape, topLeft) {
         this.color = shape.color;
         this.blocks = Object.assign([], shape.blocks);
-        this.topLeft = topLeft;
+        // cut off reference
+        this.topLeft = Object.assign([], topLeft);
     }
 }
 

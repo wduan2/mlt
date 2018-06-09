@@ -2,24 +2,26 @@ import React from 'react'
 import Stage from '../core/stage'
 import Event from '../core/event'
 import {Observable} from 'rxjs/Rx'
+import {mapTo} from 'rxjs/operators'
 
 class UI extends React.Component {
     state = {
-        nextStatus: 'Start',
+        nextStatus: START,
         paused: true,
         grid: [[]] // init grid
     };
 
     constructor(props) {
         super(props);
+        this.resetGrid();
     }
 
     // componentWillMount (deprecated) --> render --> componentDidMount
     componentDidMount() {
-        this.reset();
+        this.updateDisplay();
     }
 
-    reset = () => {
+    resetGrid = () => {
         const {width, height, initTopLeft} = this.props;
 
         this.stage = new Stage(width, height, initTopLeft);
@@ -27,27 +29,9 @@ class UI extends React.Component {
         for (let r = 0; r < height; r++) {
             this.grid[r] = Array(width).fill('#D0D3D4');
         }
-
-        this.setState({grid: this.grid});
     };
 
-    resume = () => {
-        this.activeKeyOb = keyOb.subscribe(e => {
-            this.stage.reduce(e);
-            this.refreshGrid();
-        });
-
-        this.activeGravityOb = gravityOb.subscribe(() => {
-            this.stage.reduce(Event.DOWN);
-            this.refreshGrid();
-        });
-
-        this.setState({paused: false, nextStatus: 'Pause'});
-
-        // TODO: handle game over!
-    };
-
-    refreshGrid = () => {
+    updateDisplay = () => {
         const sblocks = this.stage.grid;
         for (let r = 0; r < sblocks.length; r++) {
             for (let c = 0; c < sblocks[0].length; c++) {
@@ -73,11 +57,30 @@ class UI extends React.Component {
         this.setState({grid: this.grid});
     };
 
+    resume = () => {
+        this.setState({paused: false, nextStatus: PAUSE});
+
+        [this.activeGravityOb, this.activeKeyOb] = [gravityOb, keyOb].map(ob => {
+            return ob.subscribe(event => {
+                try {
+                    this.stage.reduce(event);
+                    this.updateDisplay();
+                } catch (e) {
+                    this.activeGravityOb.unsubscribe();
+                    this.activeKeyOb.unsubscribe();
+                    this.resetGrid();
+                    this.setState({paused: true, nextStatus: START});
+                }
+            })
+        });
+    };
+
     pause = () => {
         // for RxJs 5
-        this.activeKeyOb.unsubscribe();
         this.activeGravityOb.unsubscribe();
-        this.setState({paused: true, nextStatus: 'Resume'});
+        this.activeKeyOb.unsubscribe();
+
+        this.setState({paused: true, nextStatus: RESUME});
     };
 
     render() {
@@ -117,7 +120,7 @@ class UI extends React.Component {
     }
 }
 
-const keyOb = Observable.fromEvent(document, 'keydown')
+const keyOb = Observable.fromEvent(window, 'keydown')
     .debounceTime(100)
     .map(keyEvent => {
         let event = null;
@@ -128,15 +131,21 @@ const keyOb = Observable.fromEvent(document, 'keydown')
         } else if (keyEvent.key === 'ArrowRight') {
             event = Event.RIGHT
         } else if (keyEvent.key === 'ArrowUp') {
-            event = Event.ROTATE
+            event = Event.FALL
         } else if (keyEvent.keyCode === 32) {
             // space key event doesn't have key value
-            event = Event.FALL
+            event = Event.ROTATE
         }
         return event;
     })
     .filter(event => !!event);
 
-const gravityOb = Observable.interval(800).timeInterval();
+const gravityOb = Observable.interval(800)
+    .timeInterval()
+    .pipe(mapTo(Event.DOWN));
+
+const START = Object.freeze('start');
+const RESUME = Object.freeze('resume');
+const PAUSE = Object.freeze('pause');
 
 export default UI;
