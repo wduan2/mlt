@@ -113,27 +113,42 @@ class UI extends React.Component {
                         })}</tbody>
                     </table>
                 </div>
-                <div className={[bulma['column'], bulma['is-one-third']].join(' ')}>
-                    <button className={[bulma['button'], bulma['is-primary'], bulma['is-medium'], bulma['is-rounded']].join(' ')}
-                            style={{margin: '1%', width: '45%'}}
-                            ref={buttonRef => this.buttonRef = buttonRef}
-                            onClick={() => {
-                                if (this.state.paused) {
-
-                                    if (this.state.nextStatus === RESTART) {
-                                        this.newStage();
-                                        this.newGrid();
-                                        this.fillGrid();
-                                        this.displayGrid();
-                                    }
-
-                                    this.resume();
-                                } else {
-                                    this.pause();
+                <div className={[bulma['column'], bulma['is-one-fifth']].join(' ')}>
+                    <button
+                        className={[bulma['button'], bulma['is-primary'], bulma['is-medium'], bulma['is-rounded']].join(' ')}
+                        style={{margin: '3%', width: '50%', display: 'block', textAlign: 'center'}}
+                        ref={buttonRef => this.buttonRef = buttonRef}
+                        onClick={() => {
+                            if (this.state.paused) {
+                                if (this.state.nextStatus === RESTART) {
+                                    this.newStage();
+                                    this.newGrid();
+                                    this.fillGrid();
+                                    this.displayGrid();
                                 }
-                                // remove focus after click
-                                this.buttonRef.blur();
-                            }}>{this.state.nextStatus}
+                                this.resume();
+                            } else {
+                                this.pause();
+                            }
+                            // remove focus after click
+                            this.buttonRef.blur();
+                        }}>{this.state.nextStatus}
+                    </button>
+
+                    <button
+                        className={[bulma['button'], bulma['is-primary'], bulma['is-medium'], bulma['is-rounded']].join(' ')}
+                        style={{margin: '3%', width: '50%', display: 'block', textAlign: 'center'}}
+                        ref={buttonRef => this.buttonRef = buttonRef}
+                        disabled={!this.state.paused || this.state.nextStatus === RESTART}
+                        onClick={() => {
+                            if (this.state.paused) {
+                                this.newStage();
+                                this.newGrid();
+                                this.fillGrid();
+                                this.displayGrid();
+                                this.setState({nextStatus: START})
+                            }
+                        }}>Reset
                     </button>
                 </div>
             </div>
@@ -165,9 +180,9 @@ const gravityOb = Observable.interval(800)
     .timeInterval()
     .pipe(mapTo(Event.DOWN));
 
-const START = Object.freeze('start');
-const RESTART = Object.freeze('restart');
-const RESUME = Object.freeze('resume');
-const PAUSE = Object.freeze('pause');
+const START = Object.freeze('Start');
+const RESTART = Object.freeze('Restart');
+const RESUME = Object.freeze('Resume');
+const PAUSE = Object.freeze('Pause');
 
 export default UI;
