@@ -9,7 +9,8 @@ class UI extends React.Component {
     state = {
         nextStatus: START,
         paused: true,
-        grid: [] // init grid
+        grid: [], // init grid
+        score: 0
     };
 
     constructor(props) {
@@ -62,6 +63,10 @@ class UI extends React.Component {
         }
     };
 
+    displayScore = () => {
+        this.setState({score: this.stage.score})
+    };
+
     displayGrid = () => {
         this.setState({grid: this.grid});
     };
@@ -75,6 +80,7 @@ class UI extends React.Component {
                     this.stage.reduce(event);
                     this.fillGrid();
                     this.displayGrid();
+                    this.displayScore();
                 } catch (e) {
                     // game over
                     this.pause();
@@ -113,11 +119,11 @@ class UI extends React.Component {
                         })}</tbody>
                     </table>
                 </div>
+
                 <div className={[bulma['column'], bulma['is-one-fifth']].join(' ')}>
                     <button
                         className={[bulma['button'], bulma['is-primary'], bulma['is-medium'], bulma['is-rounded']].join(' ')}
-                        style={{margin: '3%', width: '50%', display: 'block', textAlign: 'center'}}
-                        ref={buttonRef => this.buttonRef = buttonRef}
+                        style={{margin: '3% auto', width: '50%', display: 'block', textAlign: 'center'}}
                         onClick={() => {
                             if (this.state.paused) {
                                 if (this.state.nextStatus === RESTART) {
@@ -125,20 +131,18 @@ class UI extends React.Component {
                                     this.newGrid();
                                     this.fillGrid();
                                     this.displayGrid();
+                                    this.displayScore();
                                 }
                                 this.resume();
                             } else {
                                 this.pause();
                             }
-                            // remove focus after click
-                            this.buttonRef.blur();
                         }}>{this.state.nextStatus}
                     </button>
 
                     <button
                         className={[bulma['button'], bulma['is-primary'], bulma['is-medium'], bulma['is-rounded']].join(' ')}
-                        style={{margin: '3%', width: '50%', display: 'block', textAlign: 'center'}}
-                        ref={buttonRef => this.buttonRef = buttonRef}
+                        style={{margin: '3% auto', width: '50%', display: 'block', textAlign: 'center'}}
                         disabled={!this.state.paused || this.state.nextStatus === RESTART}
                         onClick={() => {
                             if (this.state.paused) {
@@ -146,10 +150,17 @@ class UI extends React.Component {
                                 this.newGrid();
                                 this.fillGrid();
                                 this.displayGrid();
+                                this.displayScore();
                                 this.setState({nextStatus: START})
                             }
                         }}>Reset
                     </button>
+
+                    <div
+                        className={[bulma['tag'], bulma['is-info'], bulma['is-large']].join(' ')}
+                        style={{margin: '20% auto', padding: '2%', width: '70%', display: 'block', textAlign: 'center'}}>
+                        Score: {this.state.score}
+                    </div>
                 </div>
             </div>
         )
@@ -157,19 +168,18 @@ class UI extends React.Component {
 }
 
 const keyOb = Observable.fromEvent(window, 'keydown')
-    .debounceTime(100)
+    .debounceTime(80)
     .map(keyEvent => {
         let event = null;
-        if (keyEvent.key === 'ArrowDown') {
+        if (keyEvent.code === 'ArrowDown') {
             event = Event.DOWN
-        } else if (keyEvent.key === 'ArrowLeft') {
+        } else if (keyEvent.code === 'ArrowLeft') {
             event = Event.LEFT
-        } else if (keyEvent.key === 'ArrowRight') {
+        } else if (keyEvent.code === 'ArrowRight') {
             event = Event.RIGHT
-        } else if (keyEvent.key === 'ArrowUp') {
+        } else if (keyEvent.code === 'KeyX') {
             event = Event.FALL
-        } else if (keyEvent.keyCode === 32) {
-            // space key event doesn't have key value
+        } else if (keyEvent.code === 'KeyZ') {
             event = Event.ROTATE
         }
         return event;

@@ -19,6 +19,7 @@ export default class Stage {
         }
         this.initTopLeft = initTopLeft;
         this.tetris = Factory.nextTetris(initTopLeft);
+        this.score = 0;
     }
 
     reduce(event) {
@@ -76,6 +77,7 @@ export default class Stage {
                 if (Engine.canErase(r, this.grid)) {
                     // shift the blocks
                     Engine.shift(r, this.grid);
+                    this.score++;
                 }
             }
 
