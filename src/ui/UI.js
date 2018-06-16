@@ -98,20 +98,16 @@ class UI extends React.Component {
 
     render() {
         return (
-            <div className={bulma['columns']} style={{marginLeft: '10%'}}>
+            <div className={bulma['columns']} style={{marginLeft: '20%'}}>
                 <div className={[bulma['column'], bulma['is-two-fifths']].join(' ')}>
-                    <table style={{border: '2px solid', borderColor: '#1C2833'}}>
+                    <table style={{border: '2px solid', borderColor: '#1C2833', marginLeft: 'auto', marginRight: 'auto'}}>
                         <tbody>{this.state.grid.map((row, ri) => {
                             return (
                                 <tr key={ri}>{row.map((col, ci) => {
-                                    return (
-                                        <td key={ci} style={{
-                                            width: '35px',
-                                            height: '35px',
-                                            border: '1px solid',
-                                            backgroundColor: col
-                                        }}>&nbsp;</td>
-                                    );
+                                    return (<td
+                                        key={ci}
+                                        style={{width: '35px', height: '35px', border: '1px solid', backgroundColor: col}}>
+                                        &nbsp;</td>);
                                 })}</tr>
                             );
                         })}</tbody>
@@ -121,7 +117,7 @@ class UI extends React.Component {
                 <div className={[bulma['column'], bulma['is-one-fifth']].join(' ')}>
                     <button
                         className={[bulma['button'], bulma['is-primary'], bulma['is-medium'], bulma['is-rounded']].join(' ')}
-                        style={{margin: '3% auto', width: '50%', display: 'block', textAlign: 'center'}}
+                        style={{margin: '3% auto', padding: '1%', width: '50%', display: 'block', textAlign: 'center'}}
                         onClick={() => {
                             if (this.state.paused) {
                                 if (this.state.nextStatus === RESTART) {
@@ -140,7 +136,7 @@ class UI extends React.Component {
 
                     <button
                         className={[bulma['button'], bulma['is-primary'], bulma['is-medium'], bulma['is-rounded']].join(' ')}
-                        style={{margin: '3% auto', width: '50%', display: 'block', textAlign: 'center'}}
+                        style={{margin: '3% auto', padding: '1%', width: '50%', display: 'block', textAlign: 'center'}}
                         disabled={!this.state.paused || this.state.nextStatus === RESTART}
                         onClick={() => {
                             if (this.state.paused) {
@@ -156,13 +152,7 @@ class UI extends React.Component {
 
                     <div
                         className={[bulma['tag'], bulma['is-info'], bulma['is-large']].join(' ')}
-                        style={{
-                            margin: '20% auto',
-                            padding: '2%',
-                            width: '70%',
-                            display: 'block',
-                            textAlign: 'center'
-                        }}>
+                        style={{margin: '20% auto', padding: '2%', width: '70%', display: 'block', textAlign: 'center'}}>
                         Score: {this.state.score}
                     </div>
                 </div>

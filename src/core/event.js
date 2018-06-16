@@ -38,27 +38,32 @@ export const PAUSE = Object.freeze('Pause');
 export const keyMap = {
     down: Object.freeze({
         keyCode: 'ArrowDown',
-        event: Event.DOWN
+        event: Event.DOWN,
+        display: '\u2193'
     }),
 
     left: Object.freeze({
         keyCode: 'ArrowLeft',
-        event: Event.LEFT
+        event: Event.LEFT,
+        display: '\u2190'
     }),
 
     right: Object.freeze({
         keyCode: 'ArrowRight',
-        event: Event.RIGHT
+        event: Event.RIGHT,
+        display: '\u2192'
     }),
 
     fall: Object.freeze({
         keyCode: 'KeyX',
-        event: Event.FALL
+        event: Event.FALL,
+        display: 'X'
     }),
 
     rotate: Object.freeze({
         keyCode: 'KeyZ',
-        event: Event.ROTATE
+        event: Event.ROTATE,
+        display: 'Z'
     })
 };
 
