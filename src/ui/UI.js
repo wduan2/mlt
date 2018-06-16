@@ -3,6 +3,7 @@ import Stage from '../core/stage'
 import Event from '../core/event'
 import {Observable} from 'rxjs/Rx'
 import {mapTo} from 'rxjs/operators'
+import bulma from 'bulma/css/bulma.css'
 
 class UI extends React.Component {
     state = {
@@ -42,7 +43,7 @@ class UI extends React.Component {
         for (let r = 0; r < sblocks.length; r++) {
             for (let c = 0; c < sblocks[0].length; c++) {
                 if (sblocks[r][c] !== 0) {
-                    this.grid[r][c] = '#515A5A';
+                    this.grid[r][c] = '#00d1b2';
                 } else {
                     // remove the trail of tetris
                     this.grid[r][c] = '#D0D3D4';
@@ -93,44 +94,48 @@ class UI extends React.Component {
 
     render() {
         return (
-            <div>
-                <button ref={buttonRef => this.buttonRef = buttonRef} onClick={() => {
-                    if (this.state.paused) {
+            <div className={bulma['columns']} style={{marginLeft: '10%'}}>
+                <div className={[bulma['column'], bulma['is-two-fifths']].join(' ')}>
+                    <table style={{border: '2px solid', borderColor: '#1C2833'}}>
+                        <tbody>{this.state.grid.map((row, ri) => {
+                            return (
+                                <tr key={ri}>{row.map((col, ci) => {
+                                    return (
+                                        <td key={ci} style={{
+                                            width: '35px',
+                                            height: '35px',
+                                            border: '1px solid',
+                                            backgroundColor: col
+                                        }}>&nbsp;</td>
+                                    );
+                                })}</tr>
+                            );
+                        })}</tbody>
+                    </table>
+                </div>
+                <div className={[bulma['column'], bulma['is-one-third']].join(' ')}>
+                    <button className={[bulma['button'], bulma['is-primary'], bulma['is-medium'], bulma['is-rounded']].join(' ')}
+                            style={{margin: '1%', width: '45%'}}
+                            ref={buttonRef => this.buttonRef = buttonRef}
+                            onClick={() => {
+                                if (this.state.paused) {
 
-                        if (this.state.nextStatus === RESTART) {
-                            this.newStage();
-                            this.newGrid();
-                            this.fillGrid();
-                            this.displayGrid();
-                        }
+                                    if (this.state.nextStatus === RESTART) {
+                                        this.newStage();
+                                        this.newGrid();
+                                        this.fillGrid();
+                                        this.displayGrid();
+                                    }
 
-                        this.resume();
-                    } else {
-                        this.pause();
-                    }
-                    // remove focus after click
-                    this.buttonRef.blur();
-                }}>{this.state.nextStatus}</button>
-                <table style={{
-                    border: 'solid',
-                    borderColor: '#1C2833',
-                    borderWidth: '3px'
-                }}>
-                    <tbody>{this.state.grid.map((row, ri) => {
-                        return (
-                            <tr key={ri}>{row.map((col, ci) => {
-                                return (
-                                    <td key={ci} style={{
-                                        width: '20px',
-                                        height: '20px',
-                                        borderWidth: '0.5px',
-                                        backgroundColor: col
-                                    }}>&nbsp;</td>
-                                );
-                            })}</tr>
-                        );
-                    })}</tbody>
-                </table>
+                                    this.resume();
+                                } else {
+                                    this.pause();
+                                }
+                                // remove focus after click
+                                this.buttonRef.blur();
+                            }}>{this.state.nextStatus}
+                    </button>
+                </div>
             </div>
         )
     }

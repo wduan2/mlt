@@ -47,7 +47,7 @@ export const Shape = {
             [0, 1],
             [1, 1]
         ],
-        color: '#0f801f'
+        color: '#AF7AC5'
     }),
 
     T: Object.freeze({
@@ -62,7 +62,7 @@ export const Shape = {
         blocks: [
             [1, 1, 1, 1]
         ],
-        color: '#b8251f'
+        color: '#EC7063'
     }),
 
     S: Object.freeze({
@@ -70,7 +70,7 @@ export const Shape = {
             [0, 1, 1],
             [1, 1, 0]
         ],
-        color: '#da3aff'
+        color: '#D35400'
     }),
 
     Z: Object.freeze({

@@ -10,8 +10,8 @@ const SRC_DIR = resolve(__dirname, 'src');
 const PUBLIC_PATH = '/';
 
 module.exports = {
-    devtool: 'source-map',
     mode: 'development',
+    devtool: 'source-map',
     entry: SRC_DIR + '/index.js',
     output: {
         filename: 'bundle.js',
@@ -26,7 +26,8 @@ module.exports = {
             template: SRC_DIR + '/index.ejs'
         }),
         new MiniCssExtractPlugin({
-            filename: '[name].css'
+            filename: '[name].css',
+            chunkFilename: '[id].css'
         })
     ],
     optimization: {
@@ -48,12 +49,16 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                use: [MiniCssExtractPlugin.loader, 'style-loader', 'css-loader']
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    // allows css to be imported as module
+                    'css-loader?modules&importLoaders=1&localIdentName=[name]__[hash:base64:5]'
+                ]
             },
         ]
     },
     resolve: {
-        extensions: ['.js', '.jsx', '.json', 'css']
+        extensions: ['.js', '.jsx', '.json', '.css']
     },
     // IMPORTANT: the Html-Webpack-Plugin WILL NOT write files to the local
     // file system when it is used by the Webpack-Development-Server
