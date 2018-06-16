@@ -8,30 +8,36 @@ class UI extends React.Component {
     state = {
         nextStatus: START,
         paused: true,
-        grid: [[]] // init grid
+        grid: [] // init grid
     };
 
     constructor(props) {
         super(props);
-        this.resetGrid();
     }
 
     // componentWillMount (deprecated) --> render --> componentDidMount
     componentDidMount() {
-        this.updateDisplay();
+        this.newStage();
+        this.newGrid();
+        this.fillGrid();
+        this.displayGrid();
     }
 
-    resetGrid = () => {
+    newStage = () => {
         const {width, height, initTopLeft} = this.props;
-
         this.stage = new Stage(width, height, initTopLeft);
+    };
+
+    newGrid = () => {
+        const {width, height} = this.props;
+
         this.grid = Array(height).fill('#D0D3D4');
         for (let r = 0; r < height; r++) {
             this.grid[r] = Array(width).fill('#D0D3D4');
         }
     };
 
-    updateDisplay = () => {
+    fillGrid = () => {
         const sblocks = this.stage.grid;
         for (let r = 0; r < sblocks.length; r++) {
             for (let c = 0; c < sblocks[0].length; c++) {
@@ -53,7 +59,9 @@ class UI extends React.Component {
                 }
             }
         }
+    };
 
+    displayGrid = () => {
         this.setState({grid: this.grid});
     };
 
@@ -64,12 +72,12 @@ class UI extends React.Component {
             return ob.subscribe(event => {
                 try {
                     this.stage.reduce(event);
-                    this.updateDisplay();
+                    this.fillGrid();
+                    this.displayGrid();
                 } catch (e) {
-                    this.activeGravityOb.unsubscribe();
-                    this.activeKeyOb.unsubscribe();
-                    this.resetGrid();
-                    this.setState({paused: true, nextStatus: START});
+                    // game over
+                    this.pause();
+                    this.setState({paused: true, nextStatus: RESTART});
                 }
             })
         });
@@ -88,6 +96,14 @@ class UI extends React.Component {
             <div>
                 <button ref={buttonRef => this.buttonRef = buttonRef} onClick={() => {
                     if (this.state.paused) {
+
+                        if (this.state.nextStatus === RESTART) {
+                            this.newStage();
+                            this.newGrid();
+                            this.fillGrid();
+                            this.displayGrid();
+                        }
+
                         this.resume();
                     } else {
                         this.pause();
@@ -145,6 +161,7 @@ const gravityOb = Observable.interval(800)
     .pipe(mapTo(Event.DOWN));
 
 const START = Object.freeze('start');
+const RESTART = Object.freeze('restart');
 const RESUME = Object.freeze('resume');
 const PAUSE = Object.freeze('pause');
 
