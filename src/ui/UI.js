@@ -1,8 +1,6 @@
 import React from 'react'
 import Stage from '../core/stage'
-import Event from '../core/event'
-import {Observable} from 'rxjs/Rx'
-import {mapTo} from 'rxjs/operators'
+import {gravityOb, keyOb, PAUSE, RESTART, RESUME, START} from '../core/event'
 import bulma from 'bulma/css/bulma.css'
 
 class UI extends React.Component {
@@ -158,7 +156,13 @@ class UI extends React.Component {
 
                     <div
                         className={[bulma['tag'], bulma['is-info'], bulma['is-large']].join(' ')}
-                        style={{margin: '20% auto', padding: '2%', width: '70%', display: 'block', textAlign: 'center'}}>
+                        style={{
+                            margin: '20% auto',
+                            padding: '2%',
+                            width: '70%',
+                            display: 'block',
+                            textAlign: 'center'
+                        }}>
                         Score: {this.state.score}
                     </div>
                 </div>
@@ -166,33 +170,5 @@ class UI extends React.Component {
         )
     }
 }
-
-const keyOb = Observable.fromEvent(window, 'keydown')
-    .debounceTime(80)
-    .map(keyEvent => {
-        let event = null;
-        if (keyEvent.code === 'ArrowDown') {
-            event = Event.DOWN
-        } else if (keyEvent.code === 'ArrowLeft') {
-            event = Event.LEFT
-        } else if (keyEvent.code === 'ArrowRight') {
-            event = Event.RIGHT
-        } else if (keyEvent.code === 'KeyX') {
-            event = Event.FALL
-        } else if (keyEvent.code === 'KeyZ') {
-            event = Event.ROTATE
-        }
-        return event;
-    })
-    .filter(event => !!event);
-
-const gravityOb = Observable.interval(800)
-    .timeInterval()
-    .pipe(mapTo(Event.DOWN));
-
-const START = Object.freeze('Start');
-const RESTART = Object.freeze('Restart');
-const RESUME = Object.freeze('Resume');
-const PAUSE = Object.freeze('Pause');
 
 export default UI;
