@@ -1,4 +1,4 @@
-import {mapTo} from "rxjs/operators/index";
+import {mapTo} from "rxjs/operators";
 import {Observable} from "rxjs/Rx";
 
 /*
@@ -35,7 +35,7 @@ export const RESUME = Object.freeze('Resume');
 
 export const PAUSE = Object.freeze('Pause');
 
-export const keyMap = {
+export const KEY_MAP = {
     down: Object.freeze({
         keyCode: 'ArrowDown',
         event: Event.DOWN,
@@ -67,25 +67,29 @@ export const keyMap = {
     })
 };
 
-export const keyOb = Observable.fromEvent(window, 'keydown')
+const keyOb = Observable.fromEvent(window, 'keydown')
     .debounceTime(80)
     .map(keyEvent => {
         let event = null;
-        if (keyEvent.code === keyMap.down.keyCode) {
-            event = keyMap.down.event
-        } else if (keyEvent.code === keyMap.left.keyCode) {
-            event = keyMap.left.event
-        } else if (keyEvent.code === keyMap.right.keyCode) {
-            event = keyMap.right.event
-        } else if (keyEvent.code === keyMap.fall.keyCode) {
-            event = keyMap.fall.event
-        } else if (keyEvent.code === keyMap.rotate.keyCode) {
-            event = keyMap.rotate.event
+
+        if (keyEvent.code === KEY_MAP.down.keyCode) {
+            event = KEY_MAP.down.event
+        } else if (keyEvent.code === KEY_MAP.left.keyCode) {
+            event = KEY_MAP.left.event
+        } else if (keyEvent.code === KEY_MAP.right.keyCode) {
+            event = KEY_MAP.right.event
+        } else if (keyEvent.code === KEY_MAP.fall.keyCode) {
+            event = KEY_MAP.fall.event
+        } else if (keyEvent.code === KEY_MAP.rotate.keyCode) {
+            event = KEY_MAP.rotate.event
         }
+
         return event;
     })
     .filter(event => !!event);
 
-export const gravityOb = Observable.interval(800)
+const gravityOb = Observable.interval(800)
     .timeInterval()
     .pipe(mapTo(Event.DOWN));
+
+export const gameOb = keyOb.merge(gravityOb);

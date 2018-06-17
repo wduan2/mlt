@@ -100,6 +100,9 @@ export default class Engine {
     static isBlocked = (topLeft, blocks, m, grid) => {
         for (let tr = 0; tr < blocks.length; tr++) {
             for (let tc = 0; tc < blocks[tr].length; tc++) {
+                // skip empty tetris blocks
+                if (blocks[tr][tc] === 0) continue;
+
                 const nr = tr + topLeft[0] + m[0];
                 const nc = tc + topLeft[1] + m[1];
 

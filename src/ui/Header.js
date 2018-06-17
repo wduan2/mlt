@@ -1,7 +1,7 @@
 import React from 'react'
 import moment from 'moment'
 import bulma from 'bulma/css/bulma.css'
-import {keyMap} from "../core/event";
+import {KEY_MAP} from "../core/event";
 
 class Header extends React.Component {
     constructor() {
@@ -39,7 +39,7 @@ class Header extends React.Component {
                 <div
                     className={[bulma['tag'], bulma['is-info']].join(' ')}
                     style={{display: 'block', marginRight: 'auto', padding: '3px 5px', textAlign: 'center'}}>
-                    Rotate: {keyMap.rotate.display} Fall: {keyMap.fall.display} Down: {keyMap.down.display} Left: {keyMap.left.display} Right: {keyMap.right.display}
+                    Rotate: {KEY_MAP.rotate.display}  Fall: {KEY_MAP.fall.display}  Down: {KEY_MAP.down.display}  Left: {KEY_MAP.left.display}  Right: {KEY_MAP.right.display}
                 </div>
             </div>
         )

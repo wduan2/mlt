@@ -1,6 +1,6 @@
 import React from 'react'
 import Stage from '../core/stage'
-import {gravityOb, keyOb, PAUSE, RESTART, RESUME, START} from '../core/event'
+import {gameOb, PAUSE, RESTART, RESUME, START} from '../core/event'
 import bulma from 'bulma/css/bulma.css'
 
 class UI extends React.Component {
@@ -72,27 +72,23 @@ class UI extends React.Component {
     resume = () => {
         this.setState({paused: false, nextStatus: PAUSE});
 
-        [this.activeGravityOb, this.activeKeyOb] = [gravityOb, keyOb].map(ob => {
-            return ob.subscribe(event => {
-                try {
-                    this.stage.reduce(event);
-                    this.fillGrid();
-                    this.displayGrid();
-                    this.displayScore();
-                } catch (e) {
-                    // game over
-                    this.pause();
-                    this.setState({paused: true, nextStatus: RESTART});
-                }
-            })
-        });
+        this.activeOb = gameOb.subscribe(event => {
+            try {
+                this.stage.reduce(event);
+                this.fillGrid();
+                this.displayGrid();
+                this.displayScore();
+            } catch (e) {
+                // game over
+                this.pause();
+                this.setState({paused: true, nextStatus: RESTART});
+            }
+        })
     };
 
     pause = () => {
         // for RxJs 5
-        this.activeGravityOb.unsubscribe();
-        this.activeKeyOb.unsubscribe();
-
+        this.activeOb.unsubscribe();
         this.setState({paused: true, nextStatus: RESUME});
     };
 
@@ -106,7 +102,7 @@ class UI extends React.Component {
                                 <tr key={ri}>{row.map((col, ci) => {
                                     return (<td
                                         key={ci}
-                                        style={{width: '35px', height: '35px', border: '1px solid', backgroundColor: col}}>
+                                        style={{width: '26px', height: '26px', border: '1px solid', backgroundColor: col}}>
                                         &nbsp;</td>);
                                 })}</tr>
                             );
