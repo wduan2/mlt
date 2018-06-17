@@ -6,7 +6,7 @@ import Header from './ui/Header'
 render(
     <div>
         <Header/>
-        <UI width={12} height={24} initTopLeft={[0, 3]}/>
+        <UI width={12} height={24} initTopLeft={[0, 4]} duration={60}/>
     </div>,
     document.getElementById('mlt')
 );

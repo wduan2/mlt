@@ -1,4 +1,4 @@
-import {mapTo} from "rxjs/operators";
+import {mapTo, takeUntil} from "rxjs/operators";
 import {Observable} from "rxjs/Rx";
 
 /*
@@ -68,7 +68,7 @@ export const KEY_MAP = {
 };
 
 const keyOb = Observable.fromEvent(window, 'keydown')
-    .debounceTime(80)
+    .throttleTime(50)
     .map(keyEvent => {
         let event = null;
 
@@ -92,4 +92,10 @@ const gravityOb = Observable.interval(800)
     .timeInterval()
     .pipe(mapTo(Event.DOWN));
 
-export const gameOb = keyOb.merge(gravityOb);
+// stop observer after timer(duration) is fired
+export const gameOb = (duration) => keyOb.merge(gravityOb)
+    .pipe(takeUntil(Observable.timer(duration * 1000 + 1000)));
+
+export const countDownOb = (duration) => Observable.timer(0, 1000)
+    .map(t => duration - t)
+    .take(duration + 1);
