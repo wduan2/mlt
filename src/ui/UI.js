@@ -1,4 +1,5 @@
 import React from 'react'
+import Modal from 'react-modal'
 import Stage from '../core/stage'
 import {gameOb, countDownOb, PAUSE, RESTART, RESUME, START} from '../core/event'
 import bulma from 'bulma/css/bulma.css'
@@ -10,7 +11,8 @@ class UI extends React.Component {
         paused: true,
         grid: [], // init grid
         score: 0,
-        remaining: 0
+        remaining: 0,
+        showSummary: false
     };
 
     constructor(props) {
@@ -95,6 +97,14 @@ class UI extends React.Component {
         this.setState({remaining: `${dm}:${ds}`})
     };
 
+    showSummary = () => {
+        this.setState({showSummary: true});
+    };
+
+    hideSummary = () => {
+        this.setState({showSummary: false});
+    };
+
     resume = () => {
         this.setState({paused: false, nextStatus: PAUSE});
 
@@ -113,15 +123,18 @@ class UI extends React.Component {
                 // game over
                 this.pause();
                 this.setState({paused: true, nextStatus: RESTART});
+                this.showSummary();
             }
         }, err => {
             console.err(err);
             this.pause();
             this.setState({paused: true, nextStatus: RESTART});
+            this.showSummary();
         }, () => {
             // times up
             this.pause();
             this.setState({paused: true, nextStatus: RESTART});
+            this.showSummary();
         })
     };
 
@@ -135,6 +148,25 @@ class UI extends React.Component {
     render() {
         return (
             <div className={bulma['columns']} style={{marginLeft: '20%'}}>
+                <Modal
+                    isOpen={this.state.showSummary}
+                    className={[bulma['notification'], bulma['is-warning']].join(' ')}
+                    style={{content: {margin: '5% 20%'}}}>
+                    <h3 style={{padding: '1%', fontSize: '200%', fontWeight: 'bold', textAlign: 'center'}}>Game Over</h3>
+                    <div style={{fontSize: '120%', textAlign: 'center'}}>
+                        Score: {this.state.score}
+                        <br/>
+                        Duration: {this.props.duration}
+                        <br/>
+                        Date: {moment().format('L')}
+                        <br/>
+                        <button
+                            className={[bulma['button']].join(' ')}
+                            style={{marginTop: '2%', fontWeight: 'bold', width: '8%'}}
+                            onClick={() => this.hideSummary()}>OK</button>
+                    </div>
+                </Modal>
+
                 <div className={[bulma['column'], bulma['is-two-fifths']].join(' ')}>
                     <table style={{border: '2px solid', borderColor: '#1C2833', marginLeft: 'auto', marginRight: 'auto'}}>
                         <tbody>{this.state.grid.map((row, ri) => {
