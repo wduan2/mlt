@@ -99,16 +99,19 @@ test('test deepest overflow', () => {
 
 test('test highestSurface', () => {
     const grid = [
-        [0, 0, 0, 1],
-        [0, 1, 0, 0],
-        [0, 1, 0, 0],
-        [1, 1, 0, 1]
+        [0, 0, 0, 0],
+        [1, 1, 1, 0],
+        [1, 0, 0, 0],
+        [1, 1, 0, 0],
+        [1, 1, 0, 0],
+        [1, 1, 0, 0],
     ];
 
-    expect(Engine.highestSurface(0, grid)).toBe(3);
-    expect(Engine.highestSurface(1, grid)).toBe(1);
-    expect(Engine.highestSurface(2, grid)).toBe(4);
-    expect(Engine.highestSurface(3, grid)).toBe(0);
+    expect(Engine.highestSurface(grid, 0, 0)).toBe(1);
+    expect(Engine.highestSurface(grid, 1, 1)).toBe(1);
+    expect(Engine.highestSurface(grid, 2, 1)).toBe(3);
+    expect(Engine.highestSurface(grid, 1, 2)).toBe(1);
+    expect(Engine.highestSurface(grid, 2, 2)).toBe(6);
 })
 
 test('test canErase', () => {

@@ -5,11 +5,11 @@ export default class Engine {
      *
      *    _ ______ ur
      *   |_|_ _
-     *   |_|_|_|__ lr
-     *       |_|
+     *   |_|_|_|
+     *       |_|__ lr
      *  _     * <--- c with min(sr - lr)
-     * |_|_   _
-     * |_|_|_|_|__ sr
+     * |_|_   _ __ sr
+     * |_|_|_|_|
      *
      * fr: the upper row of the tetris after falling
      * sr: the row of the stage surface before falling
@@ -44,7 +44,7 @@ export default class Engine {
             }
 
             lr = tr + topLeft[0];
-            sr = Engine.highestSurface(tc + topLeft[1], grid);
+            sr = Engine.highestSurface(grid, lr, tc + topLeft[1]);
 
             if (sr - lr < minSr - minLr) {
                 minSr = sr;
@@ -157,19 +157,39 @@ export default class Engine {
     };
 
     /*
-     * Gets the highest surface of one column by finding the filled row with the smallest index
-     * since the origin of the coordinate system is at the top-left corner of the grid.
-     *
-     * @param col the column
-     * @return the height
+     * Gets the highest surface respect to the provided block.
+     * 
+     * @param grid
+     * @param blockRow
+     * @param blockCol
      */
-    static highestSurface = (col, grid) => {
-        let highest = 0;
-        while (highest < grid.length && grid[highest][col] !== 1) {
+    static highestSurface = (grid, blockRow, blockCol) => {
+        // coordinate system:
+        // 
+        //      o ---> x
+        //      |
+        //      V y
+        // 
+        // edge case 1: if the last row is empty then the highest surface is the height of the grid
+        // which is out of the array index
+        //
+        // edge case 2: if the tetris is under the highest surface, in order to calcuate the highest
+        // surface respect to the tetris, the height search must be started from the 'blockRow'
+        // 
+        //       _ _ _ _ ______ the highest surface
+        //      |_|_|_|_|
+        //      |_|_ _____ the tetris
+        //      |_|x|  
+        //      |_|x|_ _ ___ the highest surface respect to the tetris
+        //      |_|x|x|x|
+        //      |_|_|_|_|
+
+        let highest = blockRow;
+
+        while (highest < grid.length && grid[highest][blockCol] !== 1) {
             highest++;
         }
-        // if the last row is empty then the highest surface is the height of the grid
-        // which is out of the array index
+
         return highest;
     };
 }
